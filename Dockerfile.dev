@@ -23,6 +23,14 @@ ARG NVIM_VERSION=v0.12.1
 RUN curl -fsSL "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux-x86_64.tar.gz" \
   | tar -xz -C /usr/local --strip-components=1
 
+# Install mise version manager
+RUN install -dm 755 /etc/apt/keyrings \
+  && curl -fSs https://mise.en.dev/gpg-key.pub | tee /etc/apt/keyrings/mise-archive-keyring.asc 1> /dev/null \
+  && echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.asc] https://mise.en.dev/deb stable main" | tee /etc/apt/sources.list.d/mise.list \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends mise \
+  && rm -rf /var/lib/apt/lists/*
+
 # Rename the vscode user (UID 1000) to devuser
 RUN usermod -l devuser vscode && \
   groupmod -n devuser vscode && \
@@ -31,6 +39,18 @@ RUN usermod -l devuser vscode && \
   chmod 0440 /etc/sudoers.d/devuser
 
 USER devuser
+
+# Trust mise config and install tools via mise (global)
+RUN mise trust && \
+  mise use -g ruby@4.0.2 && \
+  mise use -g node@latest && \
+  mise use -g lua@latest && \
+  mise use -g go@latest && \
+  mise use -g python@latest && \
+  mise install --yes
+
+# Activate mise in shell so node/npm/etc are on PATH
+RUN echo 'eval "$(mise activate bash)"' >> /home/devuser/.bashrc
 
 # Install opencode
 RUN curl -fsSL https://opencode.ai/install | bash
