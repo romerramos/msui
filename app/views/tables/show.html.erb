@@ -1,0 +1,45 @@
+<div class="pt-16 lg:pt-0">
+  <div class="overflow-x-auto bg-base-100 w-full">
+    <div
+      class="
+        grid gap-px bg-base-200 border-y border-white/20 divide-x divide-white/20
+      "
+      style="grid-template-columns: repeat(<%= @fields.length %>, minmax(0, 1fr));"
+    >
+      <% @fields.each do |field| %>
+        <div class="bg-base-100 p-3 font-semibold text-sm text-base-content/70">
+          <%= field %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="divide-y divide-white/20 border-b border-white/20">
+      <% @data.each_with_index do |data_row, i| %>
+        <div
+          class="grid gap-px bg-base-200 divide-x divide-white/20"
+          style="grid-template-columns: repeat(<%= @fields.length %>, minmax(0, 1fr));"
+        >
+          <% data_row.each_with_index do |data_item, j| %>
+            <%= form_with url: fields_path(), method: :put do |f| %>
+              <input type="hidden" name="table_name" value="<%= @table_name %>">
+              <input type="hidden" name="field_name" value="<%= data_item.first %>">
+              <input type="hidden" name="original_row" value="<%= data_row.to_json %>">
+              <input
+                name="field_value"
+                type="text"
+                class="field input input-ghost w-full"
+                value="<%= data_item.last %>"
+                data-action="input->field#check"
+                data-controller="field"
+                data-field-original-value="<%= data_item.last %>"
+                data-field-index-value="<%= "#{i}#{j}" %>"
+                data-field-field-outlet=".field"
+              >
+              <%= f.submit "", class: "hidden" %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

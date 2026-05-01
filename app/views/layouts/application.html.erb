@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html data-theme="night" class="w-full h-full">
+  <head>
+    <title><%= content_for(:title) || "Msui" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Msui">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@5"
+      rel="stylesheet"
+      type="text/css"
+    >
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css"
+      rel="stylesheet"
+      type="text/css"
+    >
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="w-full h-full">
+    <div class="drawer lg:drawer-open h-full">
+      <input id="my-drawer-3" type="checkbox" class="drawer-toggle"/>
+      <div class="drawer-content w-full h-full relative">
+        <label
+          for="my-drawer-3"
+          aria-label="toggle sidebar"
+          class="btn btn-small lg:hidden absolute top-2 left-2 z-50"
+        >
+          <span class="is-drawer-open:hidden">
+            <%= lucide_icon("panel-left-open", width: "20", height: "20") %>
+          </span>
+        </label>
+        <main class="w-full h-full">
+          <%= yield %>
+        </main>
+      </div>
+      <div class="drawer-side">
+        <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
+        <%= render "layouts/sidebar" %>
+      </div>
+    </div>
+  </body>
+</html>

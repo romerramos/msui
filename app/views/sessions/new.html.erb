@@ -1,0 +1,62 @@
+<div class="flex w-full h-full justify-center items-center">
+  <div class="card bg-neutral text-neutral-content w-2xl">
+    <div class="card-body">
+      <h2 class="card-title">Mysql Connection</h2>
+      <%= form_with url: sessions_path, class: "flex flex-col space-y-4" do %>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Host</legend>
+          <input
+            type="text"
+            name="host"
+            class="input w-full"
+            autocomplete="host"
+            value="mysql"
+          >
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Database Name</legend>
+          <input
+            type="text"
+            name="database"
+            class="input w-full"
+            autocomplete="database"
+            value="msui_test"
+          >
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Port</legend>
+          <input
+            type="text"
+            name="port"
+            class="input w-full"
+            autocomplete="port"
+            value="3306"
+          >
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Username</legend>
+          <input
+            type="text"
+            name="username"
+            class="input w-full"
+            autocomplete="username"
+            value="root"
+          >
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Password</legend>
+          <input
+            type="password"
+            name="password"
+            class="input w-full"
+            autocomplete="current-password"
+            value="blanked"
+          >
+        </fieldset>
+        <div class="card-actions justify-end">
+          <button class="btn btn-soft-primary">Connect</button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

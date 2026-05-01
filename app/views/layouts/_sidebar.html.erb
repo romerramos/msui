@@ -1,0 +1,14 @@
+<ul class="menu bg-base-200 min-h-full w-80 p-4 space-y-2 border-r border-white/20">
+  <input class="input" placeholder="Search tables"></input>
+  <% @tables.each do |table_name, count| %>
+    <li class="capitalize">
+      <%= link_to table_path(table_name), class:"flex justify-between" do %>
+        <div class="flex gap-2 items-center">
+          <%= lucide_icon('table-2', width: "14", height: "14") %>
+          <%= table_name %>
+        </div>
+        <div class="text-sm font-medium"><%=count%></div>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
