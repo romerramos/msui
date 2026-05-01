@@ -14,8 +14,8 @@ services:
     command: "sleep infinity"
     volumes:
       - .:/app
-      - ~/.config:/root/.config
-      - ~/.ssh:/root/.ssh
+      - ${HOME}/.config:/home/devuser/.config
+      - ${HOME}/.ssh:/home/devuser/.ssh
     ports:
       - "3000:3000"
     depends_on:
