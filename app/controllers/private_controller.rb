@@ -1,4 +1,5 @@
 class PrivateController < ApplicationController
+  rescue_from Mysql2::Error, with: :handle_mysql_error
   before_action :set_service
   before_action :set_tables
 
@@ -12,6 +13,11 @@ class PrivateController < ApplicationController
   end
 
   def set_tables
-    @tables = @service.tables
+    @tables = @service.show_tables
+  end
+
+  def handle_mysql_error(exception)
+    flash[:error] = exception.message
+    redirect_to table_path(params[:table_name])
   end
 end

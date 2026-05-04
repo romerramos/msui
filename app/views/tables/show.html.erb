@@ -4,50 +4,51 @@
       class="
         grid gap-px bg-base-200 border-y border-white/20 divide-x divide-white/20
       "
-      style="grid-template-columns: repeat(<%= @fields.length %>, minmax(0, 1fr));"
+      style="grid-template-columns: repeat(<%= @table.fields.length %>, minmax(0, 1fr));"
     >
-      <% @fields.each do |field| %>
+      <% @table.fields.each do |field| %>
         <div class="bg-base-100 p-3 font-semibold text-sm text-base-content/70">
-          <%= field %>
+          <%= field.name %>
+          <% if field.required %>
+            *
+          <% end %>
         </div>
       <% end %>
     </div>
 
     <div class="divide-y divide-white/20 border-b border-white/20">
-      <%= form_with url: rows_path(), method: :post, html: { class: "grid gap-px divide-x divide-white/20", style: "grid-template-columns: repeat(#{ @fields.length }, minmax(0, 1fr));" } do |f| %>
-        <input type="hidden" name="table_name" value="<%= @table_name %>">
-        <% @fields.each do |field| %>
-          <input
-            name="fields[<%=field%>]"
-            type="text"
-            class="field input input-ghost w-full rounded-none bg-white/1"
-            value=""
-            placeholder="new <%= field %>"
-          >
+      <%= form_with url: rows_path(), method: :post, html: { class: "grid gap-px divide-x divide-white/20", style: "grid-template-columns: repeat(#{ @table.fields.length }, minmax(0, 1fr));" } do |f| %>
+        <input type="hidden" name="table_name" value="<%= @table.name %>">
+        <% @table.fields.each do |field| %>
+          <%= text_field_tag "fields[#{field.name}]",
+          "",
+          class: "field input input-ghost w-full rounded-none bg-white/1",
+          placeholder: "new #{field.name}",
+          required: field.required %>
           <%= f.submit "", class: "hidden" %>
         <% end %>
       <% end %>
-      <% @data.each_with_index do |data_row, i| %>
+      <% @table.rows.each_with_index do |row, i| %>
         <div
           class="grid gap-px bg-base-200 divide-x divide-white/20"
-          style="grid-template-columns: repeat(<%= @fields.length %>, minmax(0, 1fr));"
+          style="grid-template-columns: repeat(<%= @table.fields.length %>, minmax(0, 1fr));"
         >
-          <% data_row.each_with_index do |data_item, j| %>
+          <% row.items.each_with_index do |item, j| %>
             <%= form_with url: fields_path(), method: :put do |f| %>
-              <input type="hidden" name="table_name" value="<%= @table_name %>">
-              <input type="hidden" name="field_name" value="<%= data_item.first %>">
-              <input type="hidden" name="original_row" value="<%= data_row.to_json %>">
-              <input
-                name="field_value"
-                type="text"
-                class="field input input-ghost w-full rounded-none"
-                value="<%= data_item.last %>"
-                data-action="input->field#check"
-                data-controller="field"
-                data-field-original-value="<%= data_item.last %>"
-                data-field-index-value="<%= "#{i}#{j}" %>"
-                data-field-field-outlet=".field"
-              >
+              <input type="hidden" name="table_name" value="<%= @table.name %>">
+              <input type="hidden" name="field_name" value="<%= item.field.name %>">
+              <input type="hidden" name="original_row" value="<%= row.to_json %>">
+              <%= f.text_field :field_value,
+                           value: item.value,
+                           class: "field input input-ghost w-full rounded-none",
+                           required: item.field.required,
+                           data: {
+                             action: "input->field#check",
+                             controller: "field",
+                             field_original_value: item.value,
+                             field_index_value: "#{i}#{j}",
+                             field_field_outlet: ".field",
+                           } %>
               <%= f.submit "", class: "hidden" %>
             <% end %>
           <% end %>
