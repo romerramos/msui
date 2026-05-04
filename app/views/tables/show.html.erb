@@ -1,13 +1,38 @@
-<div class="pt-16 lg:pt-0">
+<div class="pt-16 lg:pt-0" data-controller="bulk table">
+  <div class="py-2 flex items-center gap-2">
+    <button
+      class="btn hidden"
+      data-action="click->table#saveRow"
+      data-table-target="saveRow"
+    >Save Row</button>
+    <button class="btn" data-action="click->table#addRow" data-table-target="add">Add record</button>
+    <button
+      class="btn hidden"
+      data-action="click->table#cancel"
+      data-table-target="cancel"
+    >Cancel</button>
+    <div data-bulk-target="actions" class="hidden">
+      <buton class="btn" data-action="click->bulk#delete">Delete</buton>
+    </div>
+    <%= form_with url: rows_path, method: :delete, html: {class:"hidden", "data-bulk-target":"form", "data-turbo-confirm": "Are you sure you want to delete the selected rows?"} do |f| %>
+      <input type="hidden" name="table[name]" value="<%= @table.name %>">
+      <input
+        type="hidden"
+        name="fields[pk_field_name]"
+        value="<%= @table.pk_field.name %>"
+      >
+    <% end %>
+  </div>
   <div class="overflow-x-auto bg-base-100 w-full">
     <div
       class="
         grid gap-px bg-base-200 border-y border-white/20 divide-x divide-white/20
       "
-      style="grid-template-columns: repeat(<%= @table.fields.length %>, minmax(0, 1fr));"
+      style="grid-template-columns: minmax(40px, auto) repeat(<%= @table.fields.length %>, minmax(0, 1fr));"
     >
+      <div class="bg-base-100 p-2"></div>
       <% @table.fields.each do |field| %>
-        <div class="bg-base-100 p-3 font-semibold text-sm text-base-content/70">
+        <div class="bg-base-100 p-2 font-semibold text-sm text-base-content/70">
           <%= field.name %>
           <% if field.required %>
             *
@@ -17,8 +42,9 @@
     </div>
 
     <div class="divide-y divide-white/20 border-b border-white/20">
-      <%= form_with url: rows_path(), method: :post, html: { class: "grid gap-px divide-x divide-white/20", style: "grid-template-columns: repeat(#{ @table.fields.length }, minmax(0, 1fr));" } do |f| %>
+      <%= form_with url: rows_path(), method: :post, html: { class: "grid gap-px divide-x divide-white/20 hidden", style: "grid-template-columns: minmax(40px, auto) repeat(#{ @table.fields.length }, minmax(0, 1fr));", "data-table-target": "newForm" } do |f| %>
         <input type="hidden" name="table_name" value="<%= @table.name %>">
+        <div class="bg-base-100 p-2"></div>
         <% @table.fields.each do |field| %>
           <%= text_field_tag "fields[#{field.name}]",
           "",
@@ -31,8 +57,17 @@
       <% @table.rows.each_with_index do |row, i| %>
         <div
           class="grid gap-px bg-base-200 divide-x divide-white/20"
-          style="grid-template-columns: repeat(<%= @table.fields.length %>, minmax(0, 1fr));"
+          style="grid-template-columns: minmax(40px, auto) repeat(<%= @table.fields.length %>, minmax(0, 1fr));"
         >
+          <div class="bg-base-100 p-2">
+            <input
+              type="checkbox"
+              class="checkbox checkbox-sm"
+              data-bulk-target="checkboxes"
+              data-action="change->bulk#check"
+              data-pk="<%= row.get_value(@table.pk_field.name) %>"
+            >
+          </div>
           <% row.items.each_with_index do |item, j| %>
             <%= form_with url: fields_path(), method: :put do |f| %>
               <input type="hidden" name="table_name" value="<%= @table.name %>">

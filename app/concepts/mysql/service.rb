@@ -11,6 +11,8 @@ class Mysql::Service
     table = show_tables.select { |table| table.name == table_name }.first
     table.fields = get_fields(table_name)
     table.rows = get_rows(table_name)
+    pk_field_name = primary_key_field_name(table_name)
+    table.pk_field = table.fields.select { |f| f.name == pk_field_name }.first
     table
   end
 
@@ -44,6 +46,10 @@ class Mysql::Service
     values = "(#{fields.values.map { |f| "'#{f}'" }.join(", ")})"
     query = "INSERT INTO #{table_name} #{columns} VALUES #{values}"
     execute query
+  end
+
+  def delete(table_name, pk_field_name, pk_values)
+    execute "DELETE FROM #{table_name} WHERE #{pk_field_name} IN (#{pk_values.join(", ")})"
   end
 
   private
