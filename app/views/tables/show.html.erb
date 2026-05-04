@@ -1,19 +1,42 @@
-<div class="pt-16 lg:pt-0" data-controller="bulk table">
-  <div class="py-2 flex items-center gap-2">
-    <button
-      class="btn hidden"
-      data-action="click->table#saveRow"
-      data-table-target="saveRow"
-    >Save Row</button>
-    <button class="btn" data-action="click->table#addRow" data-table-target="add">Add record</button>
-    <button
-      class="btn hidden"
-      data-action="click->table#cancel"
-      data-table-target="cancel"
-    >Cancel</button>
-    <div data-bulk-target="actions" class="hidden">
-      <buton class="btn" data-action="click->bulk#delete">Delete</buton>
+<div
+  class="pt-16 lg:pt-0"
+  data-controller="bulk table"
+  data-table-field-edit-index-value=""
+>
+  <div class="py-2 flex items-center gap-2 w-full px-6">
+    <div class="flex items-center justify-between w-full">
+      <div class="flex items-center gap-2">
+        <button
+          class="btn hidden btn-soft btn-success"
+          data-action="click->table#saveField"
+          data-table-target="saveField"
+        >Save</button>
+        <button
+          class="btn hidden"
+          data-action="click->table#cancelField"
+          data-table-target="cancelField"
+        >Cancel</button>
+        <button
+          class="btn hidden btn-soft btn-success"
+          data-action="click->table#saveRow"
+          data-table-target="saveRow"
+        >Save</button>
+        <button
+          class="btn hidden"
+          data-action="click->table#cancelRow"
+          data-table-target="cancelRow"
+        >Cancel</button>
+        <div data-bulk-target="actions" class="hidden">
+          <buton class="btn btn-soft btn-error" data-action="click->bulk#delete">Delete</buton>
+        </div>
+      </div>
+      <button
+        class="btn btn-primary btn-soft"
+        data-action="click->table#addRow"
+        data-table-target="add"
+      >Add record</button>
     </div>
+
     <%= form_with url: rows_path, method: :delete, html: {class:"hidden", "data-bulk-target":"form", "data-turbo-confirm": "Are you sure you want to delete the selected rows?"} do |f| %>
       <input type="hidden" name="table[name]" value="<%= @table.name %>">
       <input
@@ -23,7 +46,7 @@
       >
     <% end %>
   </div>
-  <div class="overflow-x-auto bg-base-100 w-full">
+  <div class="overflow-x-auto bg-base-100 w-full pr-1 pb-1">
     <div
       class="
         grid gap-px bg-base-200 border-y border-white/20 divide-x divide-white/20
@@ -42,13 +65,13 @@
     </div>
 
     <div class="divide-y divide-white/20 border-b border-white/20">
-      <%= form_with url: rows_path(), method: :post, html: { class: "grid gap-px divide-x divide-white/20 hidden", style: "grid-template-columns: minmax(40px, auto) repeat(#{ @table.fields.length }, minmax(0, 1fr));", "data-table-target": "newForm" } do |f| %>
+      <%= form_with url: rows_path(), method: :post, html: { class: "grid gap-px  hidden", style: "grid-template-columns: minmax(40px, auto) repeat(#{ @table.fields.length }, minmax(0, 1fr));", "data-table-target": "newForm" } do |f| %>
         <input type="hidden" name="table_name" value="<%= @table.name %>">
         <div class="bg-base-100 p-2"></div>
         <% @table.fields.each do |field| %>
           <%= text_field_tag "fields[#{field.name}]",
           "",
-          class: "field input input-ghost w-full rounded-none bg-white/1",
+          class: "field input input-accent w-full rounded-none bg-white/1",
           placeholder: "new #{field.name}",
           required: field.required %>
           <%= f.submit "", class: "hidden" %>
@@ -78,11 +101,10 @@
                            class: "field input input-ghost w-full rounded-none",
                            required: item.field.required,
                            data: {
-                             action: "input->field#check",
-                             controller: "field",
-                             field_original_value: item.value,
-                             field_index_value: "#{i}#{j}",
-                             field_field_outlet: ".field",
+                             action: "input->table#fieldEdit",
+                             table_target: "field",
+                             original: item.value,
+                             index: "#{i}#{j}",
                            } %>
               <%= f.submit "", class: "hidden" %>
             <% end %>
