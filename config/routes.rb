@@ -15,5 +15,6 @@ Rails.application.routes.draw do
   resources :sessions, only: [ :new, :create ]
   resources :tables, only: [ :show ]
   resource :fields, only: [ :update ]
+  resource :rows, only: [ :create ]
   get "home", to: "home#index"
 end
